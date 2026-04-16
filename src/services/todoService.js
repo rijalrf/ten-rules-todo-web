@@ -15,6 +15,7 @@ export const getAllTodos = async () => {
 };
 
 export const createTodo = async (todo) => {
+  console.log("Creating Todo:", todo); // Debug log untuk cek data yang dikirim
   try {
     const response = await api.post("/todos", todo);
     return response.data;

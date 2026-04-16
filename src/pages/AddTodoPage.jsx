@@ -6,9 +6,10 @@ const AddTodoPage = () => {
     const navigate = useNavigate(); // 3. Inisialisasi navigasi
     const { handleAdd } = useTodos(); // 4. Ambil fungsi tambah data
 
-    const onAddSubmit = async (title) => {
+    const onAddSubmit = async (todo) => {
+        console.log("Menerima data dari form:", todo); // Debug log untuk cek data yang diterima
         try {
-            await handleAdd(title);
+            await handleAdd(todo);
             navigate('/'); // 5. Setelah sukses, pindah ke halaman list (Back otomatis)
         } catch (error) {
             console.error("Gagal nambah:", error);
