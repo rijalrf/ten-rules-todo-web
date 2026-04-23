@@ -168,89 +168,21 @@ Logika bisnis kritikal (seperti perhitungan atau transformasi data) wajib memili
 
 ---
 
-## 10. Praktik Clean Code & Best Practices (SRP, DRY, KISS)
+## 10. Praktik Clean Code & Best Practices
 
-Menjaga kode tetap berkualitas tinggi, mudah dibaca, dan berkelanjutan seiring pertumbuhan proyek melalui prinsip rekayasa perangkat lunak standar.
+Menjaga kode tetap berkualitas tinggi, mudah dibaca, dan berkelanjutan seiring pertumbuhan proyek.
 
-### 10.1. Single Responsibility Principle (SRP)
+### 10.1. Prinsip Utama
 
-Setiap modul, fungsi, atau komponen hanya boleh memiliki satu tanggung jawab spesifik.
-
-- **Use Case:** Memisahkan fungsi format tanggal ke `src/utils/formatDate.ts`.
-
-### 10.2. DRY (Don't Repeat Yourself) & KISS
-
-- **DRY:** Menghindari duplikasi kode dengan mengabstraksi logika yang berulang ke dalam utilitas atau komponen atomik.
-- **KISS:** Memilih solusi yang paling sederhana dan lugas tanpa optimasi prematur yang rumit.
-
-### 10.3. Early Return & Guard Clauses
-
-Segera keluar dari fungsi jika kondisi prasyarat tidak terpenuhi untuk menghindari struktur `if-else` yang mendalam.
-
-```javascript
-if (loading) return <LoadingSpinner />;
-if (error) return <ErrorMessage message={error} />;
-return <MainContent />;
-```
-
-### 10.4. Stable Identity Keys
-
-Menggunakan ID unik database (bukan index array) pada operasi `.map()` untuk rekonsiliasi DOM yang efisien.
+- **SRP (Single Responsibility)**: Setiap modul/file hanya memiliki satu tugas spesifik.
+- **Early Return**: Pola untuk segera keluar dari fungsi render jika kondisi tertentu (seperti loading) terpenuhi.
+- **Stable Identity Keys**: Menggunakan ID unik database pada operasi `.map()` untuk rekonsiliasi DOM yang efisien.
 
 ---
 
-## 11. Perangkat Kerja & Toolkit (Tooling)
+## 🚀 Panduan Operasional
 
-Ekosistem pengembangan yang mendukung produktivitas dan standarisasi kualitas kode secara otomatis.
-
-### 11.1. Vite & TypeScript
-
-- **Vite:** Build tool generasi berikutnya untuk pengalaman pengembangan yang instan.
-- **TypeScript:** Menyediakan sistem pengetikan statis untuk mendeteksi bug lebih awal.
-
-### 11.2. ESLint & Prettier
-
-- **ESLint:** Menganalisis kode secara statis untuk menemukan pola yang bermasalah.
-- **Prettier:** Secara otomatis memformat kode untuk menjaga konsistensi visual.
-
----
-## 12. Panduan Inisialisasi Proyek Baru (New Project Setup)
-Ikuti langkah-langkah berikut untuk memulai proyek baru yang mengikuti standar industri ini dari awal.
-
-### 12.1. Inisialisasi Vite & TypeScript
-Jalankan perintah berikut untuk membuat proyek React dengan TypeScript menggunakan Vite:
-```bash
-npm create vite@latest my-app -- --template react-ts
-cd my-app
-```
-
-### 12.2. Instalasi Dependensi Standar
-Instal pustaka inti yang diperlukan untuk mendukung arsitektur industri:
-```bash
-# UI Framework
-npm install bootstrap react-bootstrap
-
-# Networking & Routing
-npm install axios react-router-dom @tanstack/react-query
-
-# Testing Tools (Dev)
-npm install vitest @testing-library/react jsdom --save-dev
-```
-
-### 12.3. Konfigurasi Struktur Folder
-Buat struktur direktori sesuai dengan prinsip *Separation of Concerns* (Poin 1):
-```bash
-mkdir -p src/{components/{ui,common,domain},hooks,pages,services/api,types,utils}
-```
-
-### 12.4. Operasional Pengembangan
-*   **Menjalankan Dev Server:** `npm run dev`
-*   **Build untuk Produksi:** `npm run build`
-*   **Eksekusi Unit Test:** `npm run test`
-
----
-
-## 🚀 Siap Coding
-Pastikan Anda menggunakan editor **VS Code** dengan ekstensi **ESLint** dan **Prettier** aktif untuk pengalaman pengembangan yang optimal sesuai standar proyek ini.
-
-# ten-rules-todo-web
+- **Instalasi Dependensi**: `npm install`
+- **Menjalankan Mode Dev**: `npm run dev`
+- **Proses Build Produksi**: `npm run build`
+- **Menjalankan Unit Test**: `npm run test`

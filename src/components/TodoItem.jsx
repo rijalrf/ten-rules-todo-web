@@ -1,4 +1,5 @@
 import { formatDate } from "../utils/formatDate";
+import Button from "./ui/Button";
 
 const TodoItem = ({ todo, onToggle, onDelete }) => {
     return (
@@ -17,15 +18,21 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
             </small>
             </div>
             <div>
-                <button
-                    className={`btn btn-sm me-2 ${todo.is_completed ? 'btn-warning' : 'btn-success'}`}
+                <Button
+                    variant={todo.is_completed ? "warning" : "success"}
+                    size="sm"
+                    className="me-2"
                     onClick={() => onToggle(todo)}
                 >
                     {todo.is_completed ? 'Undo' : 'Selesai'}
-                </button>
-                <button className="btn btn-danger btn-sm" onClick={() => onDelete(todo.id)}>
+                </Button>
+                <Button 
+                    variant="danger" 
+                    size="sm" 
+                    onClick={() => onDelete(todo.id)}
+                >
                     Hapus
-                </button>
+                </Button>
             </div>
         </li>
     );

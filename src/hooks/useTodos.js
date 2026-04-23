@@ -9,6 +9,7 @@ import {
 export const useTodos = () => {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -17,34 +18,49 @@ export const useTodos = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await getAllTodos();
       setTodos(data);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      setError(err.message || "Gagal mengambil daftar tugas");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = async (todo) => {
-    const result = await createTodo(todo);
-    setTodos([...todos, result]);
+    try {
+      setError(null);
+      const result = await createTodo(todo);
+      setTodos([...todos, result]);
+    } catch (err) {
+      setError(err.message || "Gagal menambah tugas");
+    }
   };
 
   const handleToggle = async (todo) => {
-    const result = await updateTodo(todo.id, {
-      ...todo,
-      is_completed: !todo.is_completed,
-    });
-    setTodos(todos.map((t) => (t.id === todo.id ? result : t)));
+    try {
+      setError(null);
+      const result = await updateTodo(todo.id, {
+        ...todo,
+        is_completed: !todo.is_completed,
+      });
+      setTodos(todos.map((t) => (t.id === todo.id ? result : t)));
+    } catch (err) {
+      setError(err.message || "Gagal memperbarui status");
+    }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin hapus?")) return;
-    await deleteTodo(id);
-    setTodos(todos.filter((t) => t.id !== id));
+    try {
+      setError(null);
+      await deleteTodo(id);
+      setTodos(todos.filter((t) => t.id !== id));
+    } catch (err) {
+      setError(err.message || "Gagal menghapus tugas");
+    }
   };
 
-  // Kita return semua yang dibutuhin UI
-  return { todos, loading, handleAdd, handleToggle, handleDelete };
+  return { todos, loading, error, handleAdd, handleToggle, handleDelete };
 };
