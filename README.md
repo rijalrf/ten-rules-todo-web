@@ -214,18 +214,24 @@ Ekosistem pengembangan yang mendukung produktivitas dan standarisasi kualitas ko
 - **Prettier:** Secara otomatis memformat kode untuk menjaga konsistensi visual.
 
 ---
+
 ## 12. Panduan Inisialisasi Proyek Baru (New Project Setup)
+
 Ikuti langkah-langkah berikut untuk memulai proyek baru yang mengikuti standar industri ini dari awal.
 
 ### 12.1. Inisialisasi Vite & TypeScript
+
 Jalankan perintah berikut untuk membuat proyek React dengan TypeScript menggunakan Vite:
+
 ```bash
 npm create vite@latest my-app -- --template react-ts
 cd my-app
 ```
 
 ### 12.2. Instalasi Dependensi Standar
+
 Instal pustaka inti yang diperlukan untuk mendukung arsitektur industri:
+
 ```bash
 # UI Framework
 npm install bootstrap react-bootstrap
@@ -238,19 +244,19 @@ npm install vitest @testing-library/react jsdom --save-dev
 ```
 
 ### 12.3. Konfigurasi Struktur Folder
-Buat struktur direktori sesuai dengan prinsip *Separation of Concerns* (Poin 1):
+
+Buat struktur direktori sesuai dengan prinsip _Separation of Concerns_ (Poin 1):
+
 ```bash
 mkdir -p src/{components/{ui,common,domain},hooks,pages,services/api,types,utils}
 ```
 
 ### 12.4. Operasional Pengembangan
-*   **Menjalankan Dev Server:** `npm run dev`
-*   **Build untuk Produksi:** `npm run build`
-*   **Eksekusi Unit Test:** `npm run test`
+
+- **Menjalankan Dev Server:** `npm run dev`
+- **Build untuk Produksi:** `npm run build`
+- **Eksekusi Unit Test:** `npm run test`
 
 ---
 
-## 🚀 Siap Coding
 Pastikan Anda menggunakan editor **VS Code** dengan ekstensi **ESLint** dan **Prettier** aktif untuk pengalaman pengembangan yang optimal sesuai standar proyek ini.
-
-# ten-rules-todo-web
