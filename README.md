@@ -1,36 +1,39 @@
 # Dokumentasi Standar Pengembangan: Aplikasi Todo Web
 
-Dokumentasi ini berfungsi sebagai panduan arsitektur dan standar teknis untuk pengembangan aplikasi React skala industri. Proyek ini mengintegrasikan keamanan tipe data, manajemen state tingkat lanjut, dan prinsip desain modular.
+Dokumentasi ini berfungsi sebagai panduan arsitektur dan standar teknis untuk pengembangan aplikasi React skala industri. Proyek ini mengintegrasikan keamanan tipe data, manajemen state tingkat lanjut, dan prinsip desain modular yang bersih.
 
 ---
 
 ## 1. Arsitektur & Struktur Proyek (Separation of Concerns)
 
-Penerapan prinsip _Separation of Concerns_ (SoC) dilakukan dengan memisahkan tanggung jawab antara antarmuka pengguna, logika bisnis, dan komunikasi data.
+Penerapan prinsip _Separation of Concerns_ (SoC) dilakukan dengan memisahkan tanggung jawab secara ketat guna meningkatkan skalabilitas tim dan kode.
 
 ### 1.1. Detail Organisasi Direktori
 
-- **`src/components/`**: Berisi komponen UI yang dibagi menjadi `common` (global), `domain` (fitur spesifik), dan `ui` (atomik).
-- **`src/pages/`**: Tempat orkestrasi halaman utama yang terikat pada rute (URL).
-- **`src/hooks/`**: Isolasi logika bisnis dan state management dalam bentuk Custom Hooks.
-- **`src/services/`**: Layer abstraksi API untuk menangani semua request ke backend.
-- **`src/types/`**: Definisi kontrak data (Interface/Type) untuk menjamin tipe data yang konsisten.
+- **`src/components/`**: Komponen UI yang dibagi menjadi `domain` (fitur spesifik) dan `ui` (atomik/reusable).
+- **`src/pages/`**: Komponen halaman utama yang terikat pada rute (URL).
+- **`src/hooks/`**: Isolasi logika bisnis dan state management (Custom Hooks).
+- **`src/services/`**: Layer abstraksi komunikasi API (Axios Client & Services).
+- **`src/templates/`**: Layout besar atau boilerplate halaman (e.g., `MainLayout`).
+- **`src/themes/`**: Konfigurasi tema sentral (Warna, Tipografi).
+- **`src/types/`**: Definisi kontrak data (Interface/Type TypeScript).
+- **`src/validators/`**: Skema validasi input untuk formulir.
 
 ### 1.2. Use Case
 
-Pemisahan ini memungkinkan developer untuk mengubah logika pengambilan data di `todoService.ts` tanpa harus menyentuh komponen visual di `ListPage.jsx`.
+Pemisahan ini memungkinkan developer untuk mengubah skema validasi di `authValidator.ts` tanpa harus memodifikasi logika render di `LoginPage.tsx`.
 
 ---
 
 ## 2. Keamanan Tipe Data (Type Safety)
 
-Penggunaan TypeScript diwajibkan untuk menjamin integritas data di seluruh siklus hidup aplikasi, meminimalisir kesalahan saat _runtime_.
+Penggunaan TypeScript diwajibkan untuk menjamin integritas data dan meminimalisir kesalahan saat _runtime_.
 
 ### 2.1. Manfaat Implementasi
 
 - **Pencegahan Error**: Menghindari akses ke properti yang tidak ada (_undefined property_).
-- **Produktivitas**: Menyediakan _auto-completion_ yang akurat saat penulisan kode.
-- **Maintainability**: Mempermudah _refactoring_ kode dalam skala besar tanpa merusak fitur lain.
+- **Produktivitas**: Menyediakan _auto-completion_ yang akurat melalui alias `@src/`.
+- **Maintainability**: Mempermudah _refactoring_ kode melalui sistem pengetikan statis.
 
 ### 2.2. Contoh Implementasi (`src/types/todo.ts`)
 
@@ -48,13 +51,13 @@ export interface Todo {
 
 ## 3. Advanced Server-State Management (TanStack Query)
 
-Proyek ini mengadopsi `@tanstack/react-query` sebagai standar pengelolaan data dari server, menggantikan pola `useEffect` manual yang cenderung rentan terhadap _race conditions_.
+Proyek ini mengadopsi `@tanstack/react-query` untuk pengelolaan data dari server secara efisien.
 
 ### 3.1. Detail Fitur
 
-- **Caching**: Data disimpan secara lokal untuk mengurangi beban request berulang ke server.
-- **Mutations**: Pengelolaan perubahan data (POST, PUT, DELETE) dengan sinkronisasi otomatis menggunakan `invalidateQueries`.
-- **Loading/Error States**: Status aplikasi dikelola secara otomatis oleh library.
+- **Caching & Revalidation**: Mengurangi request berulang ke server.
+- **Mutations**: Pengelolaan perubahan data dengan sinkronisasi otomatis menggunakan `invalidateQueries`.
+- **Modern State**: Menangani status `loading`, `error`, dan `data` secara deklaratif.
 
 ### 3.2. Contoh Implementasi (`src/hooks/useTodos.ts`)
 
@@ -69,85 +72,88 @@ const { data: todos, isLoading } = useQuery<Todo[]>({
 
 ## 4. Functional Components & Modern Hooks
 
-Pengembangan dilakukan sepenuhnya menggunakan paradigma fungsional dengan dukungan fitur React 19 terbaru guna meningkatkan efisiensi dan kemudahan pengujian.
+Pengembangan dilakukan sepenuhnya menggunakan paradigma fungsional dengan dukungan fitur React 19.
 
 ### 4.1. Penerapan Hooks
 
-- **Custom Hooks**: Menggabungkan logika `useQuery` dan `useMutation` ke dalam satu hook `useTodos`.
-- **Standard Hooks**: Penggunaan `useNavigate` untuk alur navigasi aplikasi yang mulus.
+- **Custom Hooks**: Menggabungkan logika data ke dalam hook `useTodos`.
+- **Standard Hooks**: Penggunaan `useNavigate` dan `useLocation` untuk alur navigasi yang dinamis.
 
 ### 4.2. Use Case
 
-Penggunaan `useTodos` di `ListPage.jsx` menyembunyikan kompleksitas manajemen state di balik antarmuka hook yang sederhana dan bersih.
+Komponen `ListPage.tsx` hanya bertugas merender data, sementara seluruh logika fetching dan manipulasi data disembunyikan di dalam `useTodos.ts`.
 
 ---
 
 ## 5. Manajemen Props & Alur Data Satu Arah
 
-Data dialirkan secara searah dari induk ke anak melalui _props_, menjamin prediktabilitas perubahan aplikasi dan mempermudah pelacakan bug.
+Data dialirkan secara searah dari induk ke anak melalui _props_ untuk menjamin prediktabilitas aplikasi.
 
 ### 5.1. Detail Teknis
 
-- **Destructuring Props**: Wajib dilakukan pada level parameter fungsi untuk transparansi dependensi data.
+- **Destructuring Props**: Wajib dilakukan pada level parameter fungsi.
 - **Callback Functions**: Digunakan untuk mengirimkan aksi dari komponen anak kembali ke induk.
 
-### 5.2. Contoh Implementasi (`src/components/TodoItem.jsx`)
+### 5.2. Contoh Implementasi (`src/components/TodoItem.tsx`)
 
-```javascript
-const TodoItem = ({ todo, onToggle, onDelete }) => {
-  // 'todo' adalah data, 'onToggle' & 'onDelete' adalah aksi balik ke parent
+```typescript
+const TodoItem = ({ todo, onToggle, onDelete }: TodoItemProps) => {
+  // todo = data, onToggle/onDelete = callback ke parent
 };
 ```
 
 ---
 
-## 6. Styling & UI Modular (Atomic Design)
+## 6. Styling & UI Modular (Tailwind CSS v4)
 
-Menggunakan pendekatan modular untuk komponen UI guna memastikan konsistensi desain dan kemudahan pemeliharaan antarmuka.
+Mengadopsi **Modern Minimalist Design** menggunakan Tailwind CSS v4 untuk antarmuka yang bersih dan ringan.
 
-### 6.1. Komponen UI Atomik
+### 6.1. Konsep Desain
 
-- **Reusable UI**: Komponen dasar seperti tombol diisolasi dalam `src/components/ui/` agar dapat digunakan secara konsisten.
-- **Framework CSS**: Menggunakan Bootstrap 5 untuk pondasi layout dan sistem grid yang responsif.
+- **Clean & Simple**: Penggunaan _whitespace_ yang lega dan tipografi Slate/Indigo.
+- **Glassmorphism**: Implementasi efek blur pada Navbar (`bg-white/80 backdrop-blur-md`).
+- **Micro-interactions**: Menambahkan animasi transisi halus (`animate-in`) dan efek klik (`active:scale-95`).
 
-### 6.2. Contoh Implementasi (`src/components/ui/Button.jsx`)
+### 6.2. Contoh Implementasi (`src/components/ui/Button.tsx`)
 
-Komponen `Button` menerima prop `variant` (primary, danger, success) untuk menyesuaikan gaya visual secara dinamis.
+Komponen `Button` menggunakan sistem variant (primary, ghost, danger) yang dibangun di atas utilitas Tailwind untuk konsistensi visual.
 
 ---
 
 ## 7. Abstraksi API & Service Layer
 
-Seluruh detail teknis komunikasi HTTP diisolasi dalam folder `services/` untuk memisahkan logika bisnis dari tampilan antarmuka.
+Seluruh detail teknis komunikasi HTTP diisolasi dalam folder `services/`.
 
 ### 7.1. Detail Implementasi
 
-- **Axios Interceptors**: Injeksi token keamanan (`Bearer Token`) otomatis pada setiap request ke API.
-- **Base Configuration**: Pengaturan URL dasar yang terpusat untuk mempermudah transisi lingkungan.
+- **Axios Interceptors**: Penanganan token keamanan secara otomatis pada setiap request.
+- **Path Aliasing**: Menggunakan alias `@src/services/` untuk menjaga kode tetap bersih.
 
-### 7.2. Use Case (`src/services/api/api.js`)
+### 7.2. Use Case (`src/services/apiClient.ts`)
 
-Interceptor secara otomatis mengambil token dari `localStorage` dan melampirkannya pada header `Authorization`.
+Interceptor secara otomatis mengambil token dari `localStorage` dan menyuntikkannya ke header `Authorization` sebelum request dikirim.
 
 ---
 
 ## 8. Penanganan Error (Double Try-Catch)
 
-Sistem penanganan error dibagi menjadi dua lapisan untuk menjamin stabilitas teknis sekaligus memberikan pengalaman pengguna yang baik.
+Sistem penanganan error berlapis untuk menjaga stabilitas teknis dan pengalaman pengguna.
 
-### 8.1. Lapisan 1: Service Level (Teknis)
+### 8.1. Lapisan 1: Service Level
 
-Bertanggung jawab menangkap kegagalan jaringan atau respons status HTTP yang tidak valid dan mencatatnya ke log teknis.
+Bertanggung jawab menangkap kegagalan jaringan dan mencatatnya ke log teknis.
 
-### 8.2. Lapisan 2: UI Level (User Experience)
+### 8.2. Lapisan 2: UI Level
 
-Bertanggung jawab menangkap error dari service dan menampilkannya kepada pengguna dalam bentuk pesan yang mudah dimengerti (misal: Alert).
+Menangkap error dari service dan menyajikannya ke pengguna dalam bentuk alert yang informatif dan estetis.
 
-### 8.3. Contoh Implementasi (`src/pages/ListPage.jsx`)
+### 8.3. Contoh Implementasi (`src/pages/ListPage.tsx`)
 
 ```javascript
 {
-  error && <div className="alert alert-danger">{error}</div>;
+  error && (
+    <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl">{error}</div>
+  );
 }
 ```
 
@@ -155,108 +161,114 @@ Bertanggung jawab menangkap error dari service dan menampilkannya kepada penggun
 
 ## 9. Automated Testing Infrastructure
 
-Menyediakan infrastruktur pengujian otomatis untuk menjamin stabilitas fitur jangka panjang dan mencegah regresi kode.
+Menyediakan infrastruktur pengujian otomatis menggunakan **Vitest** dan **React Testing Library**.
 
-### 9.1. Ekosistem Testing
+### 9.1. Standar Pengujian
 
-- **Vitest**: Test runner modern yang sangat cepat dan terintegrasi penuh dengan ekosistem Vite.
-- **React Testing Library**: Digunakan untuk menguji komponen berdasarkan interaksi nyata pengguna.
+- Unit Test untuk logika bisnis (Hooks & Utils).
+- Integration Test untuk alur pengguna kritikal (Login & CRUD).
 
 ### 9.2. Standar
 
-Logika bisnis kritikal (seperti perhitungan atau transformasi data) wajib memiliki unit test dengan cakupan minimal 80%.
+Logika bisnis kritikal wajib memiliki cakupan tes minimal 80% untuk mencegah regresi kode.
 
 ---
 
 ## 10. Praktik Clean Code & Best Practices (SRP, DRY, KISS)
 
-Menjaga kode tetap berkualitas tinggi, mudah dibaca, dan berkelanjutan seiring pertumbuhan proyek melalui prinsip rekayasa perangkat lunak standar.
+Menjaga kode tetap berkualitas tinggi melalui prinsip rekayasa perangkat lunak standar.
 
-### 10.1. Single Responsibility Principle (SRP)
+### 10.1. Prinsip Utama
 
-Setiap modul, fungsi, atau komponen hanya boleh memiliki satu tanggung jawab spesifik.
+- **SRP (Single Responsibility)**: Memisahkan utilitas tanggal ke `formatDate.ts`.
+- **DRY (Don't Repeat Yourself)**: Menggunakan komponen UI atomik di `src/components/ui/`.
+- **Early Return**: Segera keluar dari fungsi render jika kondisi pengecualian (seperti loading) terpenuhi.
 
-- **Use Case:** Memisahkan fungsi format tanggal ke `src/utils/formatDate.ts`.
+### 10.2. Path Alias Configuration
 
-### 10.2. DRY (Don't Repeat Yourself) & KISS
+Menggunakan `@src/*` untuk menghindari "Relative Path Hell" (`../../../`).
 
-- **DRY:** Menghindari duplikasi kode dengan mengabstraksi logika yang berulang ke dalam utilitas atau komponen atomik.
-- **KISS:** Memilih solusi yang paling sederhana dan lugas tanpa optimasi prematur yang rumit.
+### 10.3. Konvensi Penamaan (Naming Convention)
 
-### 10.3. Early Return & Guard Clauses
+- **PascalCase (Huruf Awal Besar):** Wajib digunakan untuk file Komponen, file Halaman, dan nama Fungsi Komponen (e.g., `TodoItem.tsx`, `ListPage.tsx`).
+- **camelCase (Huruf Awal Kecil):** Digunakan untuk nama fungsi bisnis, variabel, Custom Hooks, dan file non-render (e.g., `useTodos.ts`, `apiClient.ts`, `formatDate.ts`).
 
-Segera keluar dari fungsi jika kondisi prasyarat tidak terpenuhi untuk menghindari struktur `if-else` yang mendalam.
+### 10.4. Key Identitas yang Stabil
 
-```javascript
-if (loading) return <LoadingSpinner />;
-if (error) return <ErrorMessage message={error} />;
-return <MainContent />;
-```
-
-### 10.4. Stable Identity Keys
-
-Menggunakan ID unik database (bukan index array) pada operasi `.map()` untuk rekonsiliasi DOM yang efisien.
+Selalu menggunakan ID unik database (bukan index array) pada operasi `.map()` untuk memastikan rekonsiliasi DOM yang efisien dan mencegah bug render.
 
 ---
 
 ## 11. Perangkat Kerja & Toolkit (Tooling)
 
-Ekosistem pengembangan yang mendukung produktivitas dan standarisasi kualitas kode secara otomatis.
+Ekosistem pengembangan modern untuk produktivitas maksimal.
 
-### 11.1. Vite & TypeScript
+### 11.1. Vite & Biome
 
-- **Vite:** Build tool generasi berikutnya untuk pengalaman pengembangan yang instan.
-- **TypeScript:** Menyediakan sistem pengetikan statis untuk mendeteksi bug lebih awal.
+- **Vite**: Alat pembangun super cepat dengan HMR instan.
+- **Biome**: Solusi tunggal yang sangat cepat untuk linting dan formatting kode.
 
-### 11.2. ESLint & Prettier
+### 11.2. Tailwind CSS & PostCSS
 
-- **ESLint:** Menganalisis kode secara statis untuk menemukan pola yang bermasalah.
-- **Prettier:** Secara otomatis memformat kode untuk menjaga konsistensi visual.
+Menggunakan mesin JIT (Just-In-Time) Tailwind untuk performa CSS yang optimal.
 
 ---
 
 ## 12. Panduan Inisialisasi Proyek Baru (New Project Setup)
 
-Ikuti langkah-langkah berikut untuk memulai proyek baru yang mengikuti standar industri ini dari awal.
+Langkah-langkah untuk membangun proyek dengan standar ini dari awal.
 
 ### 12.1. Inisialisasi Vite & TypeScript
-
-Jalankan perintah berikut untuk membuat proyek React dengan TypeScript menggunakan Vite:
 
 ```bash
 npm create vite@latest my-app -- --template react-ts
 cd my-app
 ```
 
-### 12.2. Instalasi Dependensi Standar
-
-Instal pustaka inti yang diperlukan untuk mendukung arsitektur industri:
+### 12.2. Instalasi Dependensi Industri
 
 ```bash
-# UI Framework
-npm install bootstrap react-bootstrap
+# UI & Styling
+npm install tailwindcss @tailwindcss/postcss postcss autoprefixer
+npm install lucide-react # (Opsional untuk icon)
 
-# Networking & Routing
+# Networking & Logic
 npm install axios react-router-dom @tanstack/react-query
 
-# Testing Tools (Dev)
+# Testing (Dev)
 npm install vitest @testing-library/react jsdom --save-dev
 ```
 
 ### 12.3. Konfigurasi Struktur Folder
 
-Buat struktur direktori sesuai dengan prinsip _Separation of Concerns_ (Poin 1):
-
 ```bash
-mkdir -p src/{components/{ui,common,domain},hooks,pages,services/api,types,utils}
+mkdir -p src/{components/{ui,domain},hooks,pages,services,templates,themes,types,utils,validators}
 ```
 
-### 12.4. Operasional Pengembangan
+### 12.4. Konfigurasi Path Alias (@src)
 
-- **Menjalankan Dev Server:** `npm run dev`
-- **Build untuk Produksi:** `npm run build`
-- **Eksekusi Unit Test:** `npm run test`
+Untuk menghindari "Relative Path Hell", lakukan konfigurasi alias pada proyek baru:
+
+1. **`tsconfig.json`**: Tambahkan di dalam `compilerOptions`:
+
+   ```json
+   "paths": { "@src/*": ["./src/*"] }
+   ```
+
+2. **`vite.config.ts`**: Tambahkan konfigurasi alias:
+
+   ```typescript
+   resolve: {
+     alias: { "@src": fileURLToPath(new URL("./src", import.meta.url)) }
+   }
+   ```
+
+### 12.5. Operasional Pengembangan
+
+- **Mode Dev:** `npm run dev`
+- **Build Produksi:** `npm run build`
+- **Unit Test:** `npm run test`
 
 ---
 
-Pastikan Anda menggunakan editor **VS Code** dengan ekstensi **ESLint** dan **Prettier** aktif untuk pengalaman pengembangan yang optimal sesuai standar proyek ini.
+Pastikan Anda menggunakan editor **VS Code** dengan ekstensi **ESLint**, **Prettier**, dan **Tailwind CSS IntelliSense** untuk pengalaman pengembangan yang optimal sesuai standar proyek ini.

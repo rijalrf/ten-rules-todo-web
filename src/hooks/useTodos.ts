@@ -4,8 +4,8 @@ import {
   createTodo,
   updateTodo,
   deleteTodo,
-} from "../services/todoService";
-import { Todo, TodoInput } from "../types/todo";
+} from "@src/services/todoService";
+import { Todo, TodoInput } from "@src/types/todo";
 
 export const useTodos = () => {
   const queryClient = useQueryClient();

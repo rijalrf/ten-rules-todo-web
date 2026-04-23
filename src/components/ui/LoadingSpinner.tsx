@@ -1,0 +1,13 @@
+const LoadingSpinner = () => {
+    return (
+        <div className="flex flex-col items-center justify-center my-20 animate-in fade-in duration-500">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full border-4 border-slate-100"></div>
+              <div className="absolute top-0 left-0 w-12 h-12 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
+            </div>
+            <p className="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">Memuat Data</p>
+        </div>
+    );
+};
+
+export default LoadingSpinner;

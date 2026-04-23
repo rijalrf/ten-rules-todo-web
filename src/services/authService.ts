@@ -1,10 +1,8 @@
-import api from "./api/api";
+import apiClient from "./apiClient";
 
-export const login = async (credentials) => {
+export const login = async (credentials: any) => {
   try {
-    const response = await api.post("/login", credentials);
-
-    // Sesuaikan dengan balikan API Mas: "access_token"
+    const response = await apiClient.post("/login", credentials);
     if (response.data.access_token) {
       localStorage.setItem("token", response.data.access_token);
       return response.data;
@@ -14,9 +12,9 @@ export const login = async (credentials) => {
   }
 };
 
-export const register = async (userData) => {
+export const register = async (userData: any) => {
   try {
-    const response = await api.post("/register", userData);
+    const response = await apiClient.post("/register", userData);
     return response.data;
   } catch (error) {
     throw error;
